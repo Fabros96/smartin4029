@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  username    String        @unique
+  password    String
+  nombre      String
+  apellido    String
+  rol         Rol
+  activo      Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  reservas        Reserva[]
+  sugerencias     Sugerencia[]
+  tickets         Ticket[]
+  instalaciones   Instalacion[]
+  notificaciones  Notificacion[]
+}
+
+model Equipo {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  estado    EstadoRecurso @default(disponible)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  reservas  Reserva[]
+  instalaciones Instalacion[]
+}
+
+model Sala {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  estado    EstadoRecurso @default(disponible)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  reservas  Reserva[]
+  instalaciones Instalacion[]
+}
+
+model Reserva {
+  id           Int       @id @default(autoincrement())
+  tipo         TipoReserva
+  estado       EstadoReserva @default(pendiente)
+  usuarioId    Int
+  equipoId     Int?
+  salaId       Int?
+  createdAt    DateTime  @default(now())
+  scheduledAt  DateTime?
+
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+  equipo   Equipo?  @relation(fields: [equipoId], references: [id])
+  sala     Sala?    @relation(fields: [salaId], references: [id])
+}
+
+model Sugerencia {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  descripcion String
+  estado      EstadoGeneral @default(pendiente)
+  usuarioId   Int
+
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  descripcion String
+  foto        String?
+  estado      EstadoGeneral @default(pendiente)
+  numero      String   @unique
+  usuarioId   Int
+
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Instalacion {
+  id          Int      @id @default(autoincrement())
+  aplicacion  String
+  descripcion String?
+  estado      EstadoGeneral @default(pendiente)
+  usuarioId   Int
+  equipoId    Int?
+  salaId      Int?
+
+  usuario  Usuario @relation(fields: [usuarioId], references: [id])
+  equipo   Equipo? @relation(fields: [equipoId], references: [id])
+  sala     Sala?   @relation(fields: [salaId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notificacion {
+  id          Int      @id @default(autoincrement())
+  mensaje     String
+  leida       Boolean @default(false)
+  usuarioId   Int
+
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Rol {
+  alumno
+  profesor
+  preceptor
+  especial
+  admin
+}
+
+enum TipoReserva {
+  inmediata
+  programada
+}
+
+enum EstadoReserva {
+  pendiente
+  aprobada
+  rechazada
+  cancelada
+  completada
+}
+
+enum EstadoGeneral {
+  pendiente
+  aceptado
+  rechazado
+  cancelado
+}
+
+enum EstadoRecurso {
+  disponible
+  ocupado
+  mantenimiento
+}
