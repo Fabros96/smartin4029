@@ -1,12 +1,16 @@
 import express from "express";
-import auth from "../middlewares/auth.middleware.js";
-import * as controller from "../controllers/ticket.controller.js";
+import * as ctrl from "../controllers/ticket.controller.js";
+import { auth } from "../middleware/auth.middleware.js";
+import { requireRole } from "../middleware/requireRole.middleware.js";
 
 const router = express.Router();
 
-router.get("/", auth, controller.getMyTickets);
-router.get("/:id", auth, controller.getById);
-router.post("/", auth, controller.create);
-router.put("/:id", auth, controller.updateStatus);
+router.post("/tickets", auth, ctrl.crearTicket);
+router.patch(
+  "/tickets/:id/estado",
+  auth,
+  requireRole(["admin", "especial"]),
+  ctrl.cambiarEstado
+);
 
 export default router;

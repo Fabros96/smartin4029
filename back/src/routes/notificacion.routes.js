@@ -1,11 +1,10 @@
 import express from "express";
-import auth from "../middlewares/auth.middleware.js";
-import * as controller from "../controllers/notificacion.controller.js";
+import * as ctrl from "../controllers/notificacion.controller.js";
+import { auth } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", auth, controller.getMyNotificaciones);
-router.put("/:id/read", auth, controller.markRead);
-router.put("/settings", auth, controller.updateSettings);
+router.get("/notificaciones", auth, ctrl.listarNotificaciones);
+router.post("/notificaciones/:id/leida", auth, ctrl.marcarLeida);
 
 export default router;

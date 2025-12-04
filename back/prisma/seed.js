@@ -3,34 +3,42 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+/**
+ * Función principal de seeding.
+ * Se ejecuta con:
+ *    npm run seed
+ */
 async function main() {
-  console.log("🌱 Iniciando seeding...");
+  console.log("🌱 Iniciando seeding de Smartin...");
 
-  // -----------------------------
-  // 1) LIMPIEZA DE TABLAS
-  // -----------------------------
+  // =========================================================
+  // 1) LIMPIEZA DE TABLAS (ORDEN CORRECTO POR RELACIONES)
+  // =========================================================
   console.log("🧹 Limpiando tablas...");
+
   await prisma.notificacion.deleteMany();
   await prisma.instalacion.deleteMany();
   await prisma.ticket.deleteMany();
   await prisma.sugerencia.deleteMany();
   await prisma.reserva.deleteMany();
   await prisma.equipo.deleteMany();
-  await prisma.sala.deleteMany();
+  await prisma.aula.deleteMany();
   await prisma.usuario.deleteMany();
 
-  // -----------------------------
-  // 2) CREAR USUARIOS
-  // -----------------------------
+  // =========================================================
+  // 2) CREACIÓN DE USUARIOS
+  // =========================================================
   console.log("👤 Creando usuarios...");
-  const password = await bcrypt.hash("123456", 10);
 
-  const users = await prisma.usuario.createMany({
+  // Encriptamos una contraseña base para todos
+  const passwordEncriptada = await bcrypt.hash("123456", 10);
+
+  await prisma.usuario.createMany({
     data: [
       {
         email: "admin@smartin.com",
         username: "admin",
-        password,
+        password: passwordEncriptada,
         nombre: "Admin",
         apellido: "Sistema",
         rol: "admin",
@@ -38,7 +46,7 @@ async function main() {
       {
         email: "alumno@smartin.com",
         username: "alumno1",
-        password,
+        password: passwordEncriptada,
         nombre: "Juan",
         apellido: "Perez",
         rol: "alumno",
@@ -46,7 +54,7 @@ async function main() {
       {
         email: "profesor@smartin.com",
         username: "profe1",
-        password,
+        password: passwordEncriptada,
         nombre: "María",
         apellido: "Gomez",
         rol: "profesor",
@@ -54,22 +62,25 @@ async function main() {
     ],
   });
 
-  // Obtener IDs reales
+  // Obtenemos los usuarios creados con sus IDs reales
   const admin = await prisma.usuario.findUnique({
     where: { email: "admin@smartin.com" },
   });
+
   const alumno = await prisma.usuario.findUnique({
     where: { email: "alumno@smartin.com" },
   });
+
   const profesor = await prisma.usuario.findUnique({
     where: { email: "profesor@smartin.com" },
   });
 
-  // -----------------------------
-  // 3) CREAR EQUIPOS
-  // -----------------------------
+  // =========================================================
+  // 3) CREACIÓN DE EQUIPOS
+  // =========================================================
   console.log("💻 Creando equipos...");
-  const equipos = await prisma.equipo.createMany({
+
+  await prisma.equipo.createMany({
     data: [
       { nombre: "Notebook 01", estado: "disponible" },
       { nombre: "Notebook 02", estado: "disponible" },
@@ -77,28 +88,32 @@ async function main() {
     ],
   });
 
-  // -----------------------------
-  // 4) CREAR SALAS
-  // -----------------------------
-  console.log("🏫 Creando salas...");
-  await prisma.sala.createMany({
+  // =========================================================
+  // 4) CREACIÓN DE SALAS
+  // =========================================================
+  console.log("🏫 Creando aulas...");
+
+  await prisma.aula.createMany({
     data: [
-      { nombre: "Sala Multimedia", estado: "disponible" },
+      { nombre: "Aula Multimedia", estado: "disponible" },
       { nombre: "Aula 2B", estado: "ocupado" },
     ],
   });
 
+  // Recuperamos registros para relaciones
   const notebook1 = await prisma.equipo.findFirst({
     where: { nombre: "Notebook 01" },
   });
-  const salaMultimedia = await prisma.sala.findFirst({
-    where: { nombre: "Sala Multimedia" },
+
+  const aulaMultimedia = await prisma.aula.findFirst({
+    where: { nombre: "Aula Multimedia" },
   });
 
-  // -----------------------------
-  // 5) CREAR RESERVAS
-  // -----------------------------
+  // =========================================================
+  // 5) CREACIÓN DE RESERVAS
+  // =========================================================
   console.log("📅 Creando reservas...");
+
   await prisma.reserva.createMany({
     data: [
       {
@@ -111,16 +126,18 @@ async function main() {
         tipo: "programada",
         estado: "aprobada",
         usuarioId: profesor.id,
-        salaId: salaMultimedia.id,
-        scheduledAt: new Date(Date.now() + 86400000), // mañana
+        aulaId: aulaMultimedia.id,
+        // Fecha programada para mañana
+        scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     ],
   });
 
-  // -----------------------------
-  // 6) CREAR SUGERENCIAS
-  // -----------------------------
+  // =========================================================
+  // 6) CREACIÓN DE SUGERENCIAS
+  // =========================================================
   console.log("💡 Creando sugerencias...");
+
   await prisma.sugerencia.createMany({
     data: [
       {
@@ -138,31 +155,33 @@ async function main() {
     ],
   });
 
-  // -----------------------------
-  // 7) CREAR TICKETS
-  // -----------------------------
+  // =========================================================
+  // 7) CREACIÓN DE TICKETS
+  // =========================================================
   console.log("🛠 Creando tickets...");
+
   await prisma.ticket.createMany({
     data: [
       {
         descripcion: "La notebook 01 no enciende.",
         estado: "pendiente",
-        numero: "TCK-001",
+        numero: 1, // IMPORTANTE: en el schema es Int, no string
         usuarioId: alumno.id,
       },
       {
         descripcion: "Proyector con lámpara quemada.",
         estado: "pendiente",
-        numero: "TCK-002",
+        numero: 2,
         usuarioId: profesor.id,
       },
     ],
   });
 
-  // -----------------------------
-  // 8) INSTALACIONES
-  // -----------------------------
+  // =========================================================
+  // 8) CREACIÓN DE INSTALACIONES
+  // =========================================================
   console.log("🔧 Creando instalaciones...");
+
   await prisma.instalacion.createMany({
     data: [
       {
@@ -170,19 +189,23 @@ async function main() {
         descripcion: "Instalar versión educativa",
         usuarioId: admin.id,
         equipoId: notebook1.id,
+        estado: "pendiente",
       },
       {
         aplicacion: "Configuración de audio",
+        descripcion: "Ajuste de micrófonos",
         usuarioId: profesor.id,
-        salaId: salaMultimedia.id,
+        aulaId: aulaMultimedia.id,
+        estado: "pendiente",
       },
     ],
   });
 
-  // -----------------------------
-  // 9) NOTIFICACIONES
-  // -----------------------------
+  // =========================================================
+  // 9) CREACIÓN DE NOTIFICACIONES
+  // =========================================================
   console.log("🔔 Creando notificaciones...");
+
   await prisma.notificacion.createMany({
     data: [
       {
@@ -200,11 +223,12 @@ async function main() {
     ],
   });
 
-  console.log("🌱 Seed finalizado con éxito.");
-  console.log("-----------------------------");
-  console.log("-----------------------------");
+  console.log("✅ Seed finalizado con éxito.");
+  console.log("==================================================");
 }
 
 main()
   .catch((e) => console.error("❌ Error en seed:", e))
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

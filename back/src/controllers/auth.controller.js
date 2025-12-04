@@ -1,68 +1,101 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import prisma from "../prisma/prismaClient.js";
+import { loginByEmailOrUsername } from "../services/auth.services.js";
 
-// REGISTER
-export async function register(req, res) {
-  console.log("BODY RECIBIDO:", req.body);
+export async function login(req, res) {
   try {
-    const { username, nombre, apellido, email, password, rol } = req.body;
+    const { identifier, password } = req.body; // acepta email o username en 'identifier'
+    if (!identifier || !password)
+      return res.status(400).json({ ok: false, error: "Faltan credenciales" });
 
-    const existe = await prisma.usuario.findUnique({
-      where: { email },
+    const { user, token } = await loginByEmailOrUsername(identifier, password);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 2 * 60 * 60 * 1000,
     });
 
-    if (existe)
-      return res.status(400).json({ msg: "El email ya está registrado" });
-
-    const hashed = await bcrypt.hash(password, 10);
-
-    const nuevo = await prisma.usuario.create({
-      data: {
-        username,
-        nombre,
-        apellido,
-        email,
-        password: hashed,
-        rol: rol || "alumno",
-      },
+    res.json({
+      ok: true,
+      msg: "Login correcto",
+      user: { id: user.id, email: user.email, rol: user.rol },
     });
-
-    res.json({ msg: "Usuario registrado correctamente", usuario: nuevo });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Error interno" });
+    res.status(401).json({ ok: false, error: err.message });
   }
 }
 
-// LOGIN
-export async function login(req, res) {
+export function logout(req, res) {
+  res.clearCookie("token");
+  res.json({ ok: true, msg: "Sesión cerrada" });
+}
+
+// view-as: guarda original token y emite token temporal con nuevo rol
+import jwt from "jsonwebtoken";
+
+export async function viewAs(req, res) {
   try {
-    const { email, password } = req.body;
+    const { rol } = req.body;
+    if (!["alumno", "profesor", "preceptor", "especial", "admin"].includes(rol))
+      return res.status(400).json({ ok: false, error: "Rol inválido" });
 
-    const usuario = await prisma.usuario.findUnique({
-      where: { email },
+    // guardamos token original en cookie (solo en dev; en prod se debe proteger más)
+    const origToken = req.cookies?.token;
+    if (!origToken)
+      return res
+        .status(400)
+        .json({ ok: false, error: "No hay sesión original" });
+
+    // decodificamos original para info
+    const origDecoded = jwt.verify(origToken, process.env.JWT_SECRET);
+
+    // Permitimos solo admin o especial a usar view-as
+    if (!["admin", "especial"].includes(origDecoded.rol))
+      return res
+        .status(403)
+        .json({ ok: false, error: "No tiene permiso para view-as" });
+
+    //guardamos original token en cookie separada
+    res.cookie("originalToken", origToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     });
 
-    if (!usuario)
-      return res.status(400).json({ msg: "Credenciales inválidas" });
-
-    const ok = await bcrypt.compare(password, usuario.password);
-    if (!ok) return res.status(400).json({ msg: "Credenciales inválidas" });
-
-    const token = jwt.sign(
-      { id: usuario.id, email: usuario.email },
+    // emitimos token temporal con mismo id pero rol cambiado
+    const tempToken = jwt.sign(
+      { id: origDecoded.id, rol, email: origDecoded.email },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      { expiresIn: "30m" }
     );
-
-    res.json({
-      msg: "Login correcto",
-      token,
-      usuario,
+    res.cookie("token", tempToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     });
+
+    res.json({ ok: true, msg: `Ahora viendo como ${rol}` });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Error interno" });
+    res.status(400).json({ ok: false, error: err.message });
+  }
+}
+
+export function viewAsReset(req, res) {
+  try {
+    const original = req.cookies?.originalToken;
+    if (!original)
+      return res
+        .status(400)
+        .json({ ok: false, error: "No hay view-as activo" });
+    // restauramos token original y borramos originalToken cookie
+    res.cookie("token", original, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+    res.clearCookie("originalToken");
+    res.json({ ok: true, msg: "Vista original restaurada" });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
   }
 }

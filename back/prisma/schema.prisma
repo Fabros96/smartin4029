@@ -8,132 +8,151 @@ datasource db {
 }
 
 model Usuario {
-  id          Int           @id @default(autoincrement())
-  email       String        @unique
-  username    String        @unique
-  password    String
-  nombre      String
-  apellido    String
-  rol         Rol
-  activo      Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  username  String    @unique
+  password  String
+  nombre    String
+  apellido  String
+  rol       Rol
+  fechaBaja DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  reservas        Reserva[]
-  sugerencias     Sugerencia[]
-  tickets         Ticket[]
-  instalaciones   Instalacion[]
-  notificaciones  Notificacion[]
+  reservas       Reserva[]
+  tickets        Ticket[]
+  sugerencias    Sugerencia[]
+  instalaciones  Instalacion[]
+  notificaciones Notificacion[]
+  historiales    Historial[]
 }
 
 model Equipo {
-  id        Int       @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   nombre    String
+  imagen    String?
   estado    EstadoRecurso @default(disponible)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  reservas  Reserva[]
+  reservas      Reserva[]
   instalaciones Instalacion[]
+  historiales   Historial[]   @relation("HistorialEquipo")
 }
 
-model Sala {
-  id        Int       @id @default(autoincrement())
+model Aula {
+  id        Int           @id @default(autoincrement())
   nombre    String
+  incidente String?
   estado    EstadoRecurso @default(disponible)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  reservas  Reserva[]
+  reservas      Reserva[]
   instalaciones Instalacion[]
+  historiales   Historial[]   @relation("HistorialSala")
 }
 
 model Reserva {
-  id           Int       @id @default(autoincrement())
-  tipo         TipoReserva
-  estado       EstadoReserva @default(pendiente)
-  usuarioId    Int
-  equipoId     Int?
-  salaId       Int?
-  createdAt    DateTime  @default(now())
-  scheduledAt  DateTime?
+  id          Int           @id @default(autoincrement())
+  tipo        ReservaTipo
+  estado      EstadoReserva @default(pendiente)
+  usuarioId   Int
+  equipoId    Int?
+  aulaId      Int?
+  createdAt   DateTime      @default(now())
+  scheduledAt DateTime?
 
-  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
-  equipo   Equipo?  @relation(fields: [equipoId], references: [id])
-  sala     Sala?    @relation(fields: [salaId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  equipo  Equipo? @relation(fields: [equipoId], references: [id])
+  aula    Aula?   @relation(fields: [aulaId], references: [id])
+
+  historiales Historial[] @relation("HistorialReserva")
 }
 
 model Sugerencia {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   titulo      String
   descripcion String
   estado      EstadoGeneral @default(pendiente)
   usuarioId   Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  usuario     Usuario @relation(fields: [usuarioId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id])
+  historiales Historial[] @relation("HistorialSugerencia")
 }
 
 model Ticket {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   descripcion String
-  foto        String?
-  estado      EstadoGeneral @default(pendiente)
-  numero      String   @unique
+  imagen      String?
+  estado      EstadoTicket @default(pendiente)
+  numero      Int       @unique
   usuarioId   Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  usuario     Usuario @relation(fields: [usuarioId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id])
+  historiales Historial[] @relation("HistorialTicket")
 }
 
 model Instalacion {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   aplicacion  String
   descripcion String?
-  estado      EstadoGeneral @default(pendiente)
+  estado      EstadoInstalacion @default(pendiente)
   usuarioId   Int
   equipoId    Int?
-  salaId      Int?
+  aulaId      Int?
 
-  usuario  Usuario @relation(fields: [usuarioId], references: [id])
-  equipo   Equipo? @relation(fields: [equipoId], references: [id])
-  sala     Sala?   @relation(fields: [salaId], references: [id])
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  equipo    Equipo?  @relation(fields: [equipoId], references: [id])
+  aula      Aula?    @relation(fields: [aulaId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  historiales Historial[] @relation("HistorialInstalacion")
+}
+
+model Notificacion {
+  id        Int     @id @default(autoincrement())
+  mensaje   String
+  leida     Boolean @default(false)
+  usuarioId Int
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Notificacion {
+model Historial {
   id          Int      @id @default(autoincrement())
-  mensaje     String
-  leida       Boolean @default(false)
-  usuarioId   Int
+  estadoViejo String?
+  estadoNuevo String?
+  fechaCambio DateTime @default(now())
 
-  usuario     Usuario @relation(fields: [usuarioId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+  usuarioResponsable Int?
+  usuario            Usuario? @relation(fields: [usuarioResponsable], references: [id], map: "fk_historial_usuario")
 
-enum Rol {
-  alumno
-  profesor
-  preceptor
-  especial
-  admin
-}
+  equipoId      Int?
+  aulaId        Int?
+  reservaId     Int?
+  sugerenciaId  Int?
+  ticketId      Int?
+  instalacionId Int?
 
-enum TipoReserva {
-  inmediata
-  programada
-}
+  equipo Equipo? @relation("HistorialEquipo", fields: [equipoId], references: [id], map: "fk_historial_equipo")
 
-enum EstadoReserva {
-  pendiente
-  aprobada
-  rechazada
-  cancelada
-  completada
+  aula Aula? @relation("HistorialSala", fields: [aulaId], references: [id], map: "fk_historial_aula")
+
+  reserva Reserva? @relation("HistorialReserva", fields: [reservaId], references: [id], map: "fk_historial_reserva")
+
+  sugerencia Sugerencia? @relation("HistorialSugerencia", fields: [sugerenciaId], references: [id], map: "fk_historial_sugerencia")
+
+  ticket Ticket? @relation("HistorialTicket", fields: [ticketId], references: [id], map: "fk_historial_ticket")
+
+  instalacion Instalacion? @relation("HistorialInstalacion", fields: [instalacionId], references: [id], map: "fk_historial_instalacion")
 }
 
 enum EstadoGeneral {
@@ -147,4 +166,39 @@ enum EstadoRecurso {
   disponible
   ocupado
   mantenimiento
+}
+
+enum Rol {
+  alumno
+  profesor
+  preceptor
+  especial
+  admin
+}
+
+enum ReservaTipo {
+  inmediata
+  programada
+}
+
+enum EstadoReserva {
+  pendiente
+  aprobada
+  rechazada
+  cancelada
+  completada
+}
+
+enum EstadoTicket {
+  pendiente
+  aceptado
+  rechazado
+  cancelado
+}
+
+enum EstadoInstalacion {
+  pendiente
+  asignada
+  completada
+  cancelada
 }

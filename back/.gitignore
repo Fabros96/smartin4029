@@ -1,6 +1,5 @@
-.env
 node_modules
-dist
-.vercel
-/uploads
-/backups
+# Keep environment variables out of version control
+.env
+
+/generated/prisma

@@ -1,12 +1,16 @@
 import express from "express";
-import auth from "../middlewares/auth.middleware.js";
-import * as controller from "../controllers/instalacion.controller.js";
+import * as ctrl from "../controllers/instalacion.controller.js";
+import { auth } from "../middleware/auth.middleware.js";
+import { requireRole } from "../middleware/requireRole.middleware.js";
 
 const router = express.Router();
 
-router.get("/", auth, controller.getMyInstallaciones);
-router.post("/", auth, controller.create);
-router.put("/:id", auth, controller.updateStatus);
-router.delete("/:id", auth, controller.cancel);
+router.post("/instalaciones", auth, ctrl.crearInstalacion);
+router.patch(
+  "/instalaciones/:id/estado",
+  auth,
+  requireRole(["admin", "especial"]),
+  ctrl.cambiarEstado
+);
 
 export default router;

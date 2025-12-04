@@ -1,18 +1,25 @@
 import express from "express";
-import {
-  getAll,
-  getById,
-  create,
-  update,
-  remove,
-} from "../controllers/equipo.controller.js";
+import * as ctrl from "../controllers/equipo.controller.js";
+import { auth } from "../middleware/auth.middleware.js";
+import { requireRole } from "../middleware/requireRole.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getAll);
-router.get("/:id", getById);
-router.post("/", create);
-router.put("/:id", update);
-router.delete("/:id", remove);
+router.post(
+  "/equipos",
+  auth,
+  requireRole(["admin", "especial"]),
+  ctrl.crearEquipo
+);
+
+router.get("/equipos", auth, ctrl.listarEquipos);
+router.get("/equipos/estado/:estado", auth, ctrl.obtenerPorEstado);
+router.patch(
+  "/equipos/:id/estado",
+  auth,
+  requireRole(["admin", "especial"]),
+  ctrl.cambiarEstado
+);
+
 
 export default router;

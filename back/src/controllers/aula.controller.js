@@ -1,46 +1,25 @@
-import prisma from "../prisma/prismaClient.js";
+import * as service from "../services/aula.services.js";
 
-export const getAll = async (req, res) => {
-  const aulas = await prisma.aula.findMany();
-  res.json(aulas);
-};
-
-export const getById = async (req, res) => {
-  const { id } = req.params;
-  const aula = await prisma.aula.findUnique({
-    where: { id: Number(id) },
-  });
-
-  if (!aula) return res.status(404).json({ msg: "No encontrado" });
-  res.json(aula);
-};
-
-export const create = async (req, res) => {
-  const { name, description } = req.body;
-  const aula = await prisma.aula.create({
-    data: { name, description },
-  });
-  res.json(aula);
-};
-
-export const update = async (req, res) => {
-  const { id } = req.params;
-  const { name, description } = req.body;
-
-  const aula = await prisma.aula.update({
-    where: { id: Number(id) },
-    data: { name, description },
-  });
-
-  res.json(aula);
-};
-
-export const remove = async (req, res) => {
-  const { id } = req.params;
-
-  await prisma.aula.delete({
-    where: { id: Number(id) },
-  });
-
-  res.json({ msg: "Eliminado" });
-};
+export async function crearAula(req, res) {
+  try {
+    const s = await service.crearAula(req.body);
+    res.json({ ok: true, aula: s });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e.message });
+  }
+}
+export async function listarAulas(req, res) {
+  res.json({ ok: true, rows: await service.listarAulas() });
+}
+export async function cambiarEstado(req, res) {
+  try {
+    const updated = await service.actualizarEstadoAula(
+      Number(req.params.id),
+      req.body.estado,
+      req.user.id
+    );
+    res.json({ ok: true, updated });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e.message });
+  }
+}

@@ -1,47 +1,33 @@
-import prisma from "../prisma/prismaClient.js";
+import * as service from "../services/sugerencia.services.js";
 
-// Crear una nueva sugerencia
-export const create = async (req, res) => {
-  const { titulo, descripcion } = req.body;
-
-  const sugerencia = await prisma.sugerencia.create({
-    data: {
-      titulo,
-      descripcion,
+export async function listarSugerencias(req, res) {
+  try {
+    const sugerencias = await service.listarSugerencias();
+    res.json({ ok: true, sugerencias });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e.message });
+  }
+}
+export async function crearSugerencia(req, res) {
+  try {
+    const s = await service.crearSugerencia({
+      ...req.body,
       usuarioId: req.user.id,
-    },
-  });
-
-  res.json(sugerencia);
-};
-
-// Obtener sugerencias del usuario logueado
-export const getMySugerencias = async (req, res) => {
-  const sugerencias = await prisma.sugerencia.findMany({
-    where: { usuarioId: req.user.id },
-  });
-  res.json(sugerencias);
-};
-
-// Obtener sugerencia por ID
-export const getById = async (req, res) => {
-  const { id } = req.params;
-  const sugerencia = await prisma.sugerencia.findUnique({
-    where: { id: Number(id) },
-  });
-  if (!sugerencia) return res.status(404).json({ msg: "No encontrado" });
-  res.json(sugerencia);
-};
-
-// Actualizar estado de una sugerencia
-export const updateStatus = async (req, res) => {
-  const { id } = req.params;
-  const { estado } = req.body;
-
-  const sugerencia = await prisma.sugerencia.update({
-    where: { id: Number(id) },
-    data: { estado },
-  });
-
-  res.json(sugerencia);
-};
+    });
+    res.json({ ok: true, sugerencia: s });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e.message });
+  }
+}
+export async function cambiarEstado(req, res) {
+  try {
+    const u = await service.cambiarEstadoSugerencia(
+      Number(req.params.id),
+      req.body.estado,
+      req.user.id
+    );
+    res.json({ ok: true, updated: u });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e.message });
+  }
+}

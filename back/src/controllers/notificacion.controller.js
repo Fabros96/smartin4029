@@ -1,27 +1,17 @@
-import prisma from "../prisma/prismaClient.js";
+import * as service from "../services/notificacion.services.js";
 
-// Obtener notificaciones del usuario logueado
-export const getMyNotificaciones = async (req, res) => {
-  const notificaciones = await prisma.notificacion.findMany({
-    where: { usuarioId: req.user.id },
-  });
-  res.json(notificaciones);
-};
+export async function listarNotificaciones(req, res) {
+  const usuarioId = req.user.id;
+  const rows = await service.listarNotificaciones(usuarioId);
+  res.json({ ok: true, rows });
+}
 
-// Marcar una notificación como leída
-export const markRead = async (req, res) => {
-  const { id } = req.params;
-
-  const notificacion = await prisma.notificacion.update({
-    where: { id: Number(id) },
-    data: { leida: true },
-  });
-
-  res.json(notificacion);
-};
-
-// Actualizar preferencias de notificaciones (opcional)
-export const updateSettings = async (req, res) => {
-  // Aquí se pueden guardar preferencias de notificaciones en DB si las agregamos
-  res.json({ msg: "Preferencias actualizadas" });
-};
+export async function marcarLeida(req, res) {
+  try {
+    const { id } = req.params;
+    const u = await service.marcarLeida(Number(id));
+    res.json({ ok: true, updated: u });
+  } catch (e) {
+    res.status(400).json({ ok: false, error: e.message });
+  }
+}
