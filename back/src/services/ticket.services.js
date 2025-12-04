@@ -4,14 +4,19 @@ import { crearNotificacion } from "./notificacion.services.js";
 const prisma = new PrismaClient();
 
 export async function crearTicket({ descripcion, imagen = null, usuarioId }) {
-  // generar numero único simple
-  const numero = `T-${Date.now()}`;
+  const numero = `T-${Date.now()}`; 
+
   const nuevo = await prisma.ticket.create({
-    data: { descripcion, imagen, numero, usuarioId },
+    data: {
+      descripcion,
+      imagen,
+      numero,
+      usuario: {
+        connect: { id: usuarioId },
+      },
+    },
   });
   await crearHistorial({
-    entidad: "Ticket",
-    referenciaId: nuevo.id,
     estadoViejo: null,
     estadoNuevo: nuevo.estado,
     usuarioResponsable: usuarioId,
@@ -31,11 +36,11 @@ export async function cambiarEstadoTicket(id, nuevoEstado, usuarioId) {
     data: { estado: nuevoEstado },
   });
   await crearHistorial({
-    entidad: "Ticket",
-    referenciaId: id,
+    
     estadoViejo: antes?.estado || null,
     estadoNuevo: nuevoEstado,
     usuarioResponsable: usuarioId,
+    ticket: {connect: { id: nuevo.id }, },
   });
   // notificar usuario creador
   if (antes?.usuarioId)

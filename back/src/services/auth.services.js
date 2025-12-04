@@ -22,3 +22,14 @@ export async function loginByEmailOrUsername(identifier, password) {
 
   return { user, token };
 }
+
+export async function obtenerUsuarioPorId(id) {
+  return prisma.usuario.findUnique({ where: { id } });
+}
+
+export async function actualizarMisDatos(id, data) {
+  return prisma.usuario.update({
+    where: { id },
+    data,
+  });
+}

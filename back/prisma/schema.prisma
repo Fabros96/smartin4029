@@ -18,6 +18,7 @@ model Usuario {
   fechaBaja DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  preferenciaNotif Int @default(0)
 
   reservas       Reserva[]
   tickets        Ticket[]
@@ -88,7 +89,7 @@ model Ticket {
   descripcion String
   imagen      String?
   estado      EstadoTicket @default(pendiente)
-  numero      Int       @unique
+  numero      String       @unique
   usuarioId   Int
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

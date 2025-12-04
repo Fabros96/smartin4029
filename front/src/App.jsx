@@ -33,15 +33,15 @@ export default function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
           }
         />
         <Route
           path="/equipos"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Equipos />
             </ProtectedRoute>
           }
@@ -49,7 +49,7 @@ export default function App() {
         <Route
           path="/reservas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Reservas />
             </ProtectedRoute>
           }
@@ -57,7 +57,7 @@ export default function App() {
         <Route
           path="/usuarios"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Usuarios />
             </ProtectedRoute>
           }
@@ -65,7 +65,7 @@ export default function App() {
         <Route
           path="/instalaciones"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Instalaciones />
             </ProtectedRoute>
           }
@@ -73,7 +73,7 @@ export default function App() {
         <Route
           path="/aulas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Aulas />
             </ProtectedRoute>
           }
@@ -81,7 +81,7 @@ export default function App() {
         <Route
           path="/viewAs"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <ViewAs />
             </ProtectedRoute>
           }
@@ -89,7 +89,7 @@ export default function App() {
         <Route
           path="/sugerencias"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Sugerencias />
             </ProtectedRoute>
           }
@@ -99,7 +99,7 @@ export default function App() {
         <Route
           path="*"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute rolesPermitidos={["admin"]}>
               <Dashboard />
             </ProtectedRoute>
           }

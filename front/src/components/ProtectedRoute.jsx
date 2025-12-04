@@ -4,13 +4,30 @@ import { useAuth } from "../auth/AuthContext";
 import { Navigate } from "react-router-dom";
 
 /*
-  Este componente envuelve páginas privadas
-  Si no hay usuario logueado, redirige al login
+  Protege rutas por:
+  ✅ Usuario logueado
+  ✅ Rol autorizado
 */
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, rolesPermitidos }) {
   const { usuario, loading } = useAuth();
 
   if (loading) return <div>Cargando sesión...</div>;
 
-  return usuario ? children : <Navigate to="/login" replace />;
+  // ❌ No está logueado
+  if (!usuario) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // ✅ Si NO se especifican roles → entra cualquier usuario logueado
+  if (!rolesPermitidos) {
+    return children;
+  }
+  
+  // ❌ Está logueado pero no tiene permiso
+  if (rolesPermitidos && !rolesPermitidos.includes(usuario.rol)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // ✅ Usuario autorizado
+  return children;
 }

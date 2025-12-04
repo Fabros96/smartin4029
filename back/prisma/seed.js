@@ -42,6 +42,7 @@ async function main() {
         nombre: "Admin",
         apellido: "Sistema",
         rol: "admin",
+        preferenciaNotif: 0,
       },
       {
         email: "alumno@smartin.com",
@@ -50,6 +51,7 @@ async function main() {
         nombre: "Juan",
         apellido: "Perez",
         rol: "alumno",
+        preferenciaNotif: 0,
       },
       {
         email: "profesor@smartin.com",
@@ -58,6 +60,7 @@ async function main() {
         nombre: "María",
         apellido: "Gomez",
         rol: "profesor",
+        preferenciaNotif: 0,
       },
     ],
   });
@@ -165,13 +168,13 @@ async function main() {
       {
         descripcion: "La notebook 01 no enciende.",
         estado: "pendiente",
-        numero: 1, // IMPORTANTE: en el schema es Int, no string
+        numero: "1", // IMPORTANTE: en el schema es Int, no string
         usuarioId: alumno.id,
       },
       {
         descripcion: "Proyector con lámpara quemada.",
         estado: "pendiente",
-        numero: 2,
+        numero: "2",
         usuarioId: profesor.id,
       },
     ],

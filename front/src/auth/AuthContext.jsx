@@ -6,7 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  
   // Verifica sesión activa al montar la app
   useEffect(() => {
     const checkSession = async () => {
@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         const res = await api.get("/auth/me");
         // Guardamos el usuario real
-        setUsuario(res.data.user);
+        setUsuario(res.data.usuario);
       } catch (err) {
         setUsuario(null);
       } finally {

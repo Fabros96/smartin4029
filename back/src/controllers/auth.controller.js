@@ -1,4 +1,6 @@
-import { loginByEmailOrUsername } from "../services/auth.services.js";
+import * as service from "../services/auth.services.js";
+// view-as: guarda original token y emite token temporal con nuevo rol
+import jwt from "jsonwebtoken";
 
 export async function login(req, res) {
   try {
@@ -6,12 +8,15 @@ export async function login(req, res) {
     if (!identifier || !password)
       return res.status(400).json({ ok: false, error: "Faltan credenciales" });
 
-    const { user, token } = await loginByEmailOrUsername(identifier, password);
+    const { user, token } = await service.loginByEmailOrUsername(
+      identifier,
+      password
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: false,
+      sameSite: "lax",
       maxAge: 2 * 60 * 60 * 1000,
     });
 
@@ -30,8 +35,6 @@ export function logout(req, res) {
   res.json({ ok: true, msg: "Sesión cerrada" });
 }
 
-// view-as: guarda original token y emite token temporal con nuevo rol
-import jwt from "jsonwebtoken";
 
 export async function viewAs(req, res) {
   try {
@@ -58,8 +61,8 @@ export async function viewAs(req, res) {
     //guardamos original token en cookie separada
     res.cookie("originalToken", origToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: false,
+      sameSite: "lax",
     });
 
     // emitimos token temporal con mismo id pero rol cambiado
@@ -70,8 +73,8 @@ export async function viewAs(req, res) {
     );
     res.cookie("token", tempToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: false,
+      sameSite: "lax",
     });
 
     res.json({ ok: true, msg: `Ahora viendo como ${rol}` });
@@ -90,8 +93,8 @@ export function viewAsReset(req, res) {
     // restauramos token original y borramos originalToken cookie
     res.cookie("token", original, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: false,
+      sameSite: "lax",
     });
     res.clearCookie("originalToken");
     res.json({ ok: true, msg: "Vista original restaurada" });
@@ -99,3 +102,45 @@ export function viewAsReset(req, res) {
     res.status(400).json({ ok: false, error: err.message });
   }
 }
+
+export async function me(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const usuario = await service.obtenerUsuarioPorId(userId);
+    if (!usuario) {
+      return res
+        .status(404)
+        .json({ ok: false, error: "Usuario no encontrado" });
+    }
+
+    const usuarioAMostrar = {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      email: usuario.email,
+      telefono: usuario.telefono,
+      estado: usuario.estado,
+      createdAt: usuario.createdAt,
+      updatedAt: usuario.updatedAt,
+    };
+
+    res.json({ ok: true, user: usuarioAMostrar });
+  } catch (error) {
+    console.error("Error en /me:", error);
+    res.status(500).json({ ok: false, error: "Error al obtener usuario" });
+  }
+}
+
+
+export async function cambiarMisDatos(req, res) {
+  try {
+    const userId = req.user.id; // ✅ SALE DEL TOKEN
+    const updated = await service.actualizarMisDatos(userId, req.body);
+
+    res.json({ ok: true, usuario: updated , msg: "Datos actualizados correctamente"});
+  } catch (e) {
+    res.status(400).json({ ok: false, error: "Error al actualizar datos" });
+  }
+}
+

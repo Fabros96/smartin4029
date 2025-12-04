@@ -13,6 +13,10 @@ router.post("/view-as", auth, controller.viewAs);
 router.post("/view-as/reset", auth, controller.viewAsReset);
 
 // me
-router.get("/me", auth, (req, res) => res.json({ ok: true, user: req.user }));
+router.get("/me", auth, controller.me);
+
+//Update user data
+router.put("/me", auth, controller.cambiarMisDatos);
+
 
 export default router;
