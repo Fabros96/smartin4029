@@ -13,7 +13,6 @@ useEffect(() => {
     try {
       setLoading(true);
       const res = await api.get("/auth/me");
-      console.log("Usuario autenticado:", res.data);
       setUsuario(res.data.user || res.data.usuario);
     } catch (err) {
       setUsuario(null);

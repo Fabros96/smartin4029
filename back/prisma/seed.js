@@ -77,6 +77,36 @@ async function main() {
   const profesor = await prisma.usuario.findUnique({
     where: { email: "profesor@smartin.com" },
   });
+  // =========================================================
+  // 2.5) CREACIÓN DE CURSOS
+  // =========================================================
+  console.log("📚 Creando cursos...");
+
+  // Creamos un curso
+  const curso1 = await prisma.curso.create({
+    data: {
+      nombre: "Curso de Matemáticas",
+      descripcion: "Curso compartido por alumno y profesor",
+    },
+  });
+
+  // Asignamos al alumno al curso
+  await prisma.usuario.update({
+    where: { id: alumno.id },
+    data: { cursoId: curso1.id },
+  });
+
+  // Asignamos al profesor al curso
+  await prisma.usuario.update({
+    where: { id: profesor.id },
+    data: {
+      cursosProfesor: {
+        connect: { id: curso1.id },
+      },
+    },
+  });
+
+  console.log(`✅ Alumno y profesor asignados al curso: ${curso1.nombre}`);
 
   // =========================================================
   // 3) CREACIÓN DE EQUIPOS

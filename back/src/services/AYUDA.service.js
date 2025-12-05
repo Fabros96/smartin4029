@@ -16,41 +16,41 @@ const prisma = new PrismaClient();
 // FUNCIONES / CONTROLADORES
 // --------------------------
 
-// FUNCION 1: LISTAR SUGERENCIAS
+// FUNCION 1: LISTAR ELEMENTOS
 // --------------------------
 // Esta función actúa como CONTROLADOR: recibe la acción del usuario
-// y consulta al MODELO para obtener todos los datos, luego la VISTA mostrará estos datos en pantalla
-
-export async function listarSugerencias() {
-  // Llamamos al MODELO (base de datos) para traer todas las sugerencias
-  // prisma.sugerencia.findMany() devuelve un array con todas las sugerencias
-  return await prisma.sugerencia.findMany();
+// y decide consultar al MODELO para obtener todos los datos
+// La VISTA es la que mostrará estos datos en pantalla
+export async function listarElementos() {
+  // Llamamos al MODELO (base de datos) para traer todos los elementos
+  // prisma.elemento.findMany() devuelve un array con todos los elementos
+  return await prisma.elemento.findMany();
 }
 
-// FUNCION 2: CREAR SUGERENCIA
+// FUNCION 2: CREAR ELEMENTO
 // --------------------------
-// Esta función también es un CONTROLADOR: recibe los datos del formulario
-// y decide cómo crear la sugerencia, crear historial y notificaciones
-export async function crearSugerencia({ titulo, descripcion, usuarioId }) {
+// Esta función es un CONTROLADOR: recibe los datos del formulario
+// y decide cómo crear el elemento, crear historial y notificaciones
+export async function crearElemento({ titulo, descripcion, usuarioId }) {
   // VALIDACIÓN: Si no hay descripción, mostramos error
-  // Esto evita que se creen sugerencias vacías
+  // Esto evita que se creen elementos vacíos
   if (!descripcion) throw new Error("La descripción es obligatoria");
 
   // Si no se pasó un título, ponemos uno por defecto
   const tituloFinal = titulo || "Sin Titulo";
 
-  // LLAMADA AL MODELO: Creamos la sugerencia en la base de datos
-  const s = await prisma.sugerencia.create({
+  // LLAMADA AL MODELO: Creamos el elemento en la base de datos
+  const e = await prisma.elemento.create({
     data: { titulo: tituloFinal, descripcion, usuarioId },
   });
 
-  // LLAMADA AL MODELO: Creamos un historial con estado inicial "creada"
+  // LLAMADA AL MODELO: Creamos un historial con estado inicial "creado"
   await prisma.historial.create({
     data: {
       estadoViejo: null, // no había estado antes
-      estadoNuevo: "creada", // estado inicial
-      usuario: { connect: { id: usuarioId } }, // quién creó la sugerencia
-      sugerencia: { connect: { id: s.id } }, // conectamos con la sugerencia
+      estadoNuevo: "creado", // estado inicial
+      usuario: { connect: { id: usuarioId } }, // quién creó el elemento
+      elemento: { connect: { id: e.id } }, // conectamos con el elemento
     },
   });
 
@@ -59,43 +59,43 @@ export async function crearSugerencia({ titulo, descripcion, usuarioId }) {
 
   // Creamos notificaciones para cada administrador
   for (const a of admins) {
-    await crearNotificacion(a.id, `Nueva sugerencia #${s.id}`);
+    await crearNotificacion(a.id, `Nuevo elemento #${e.id}`);
   }
 
-  // DEVOLVEMOS la sugerencia creada para que la VISTA la pueda mostrar
-  return s;
+  // DEVOLVEMOS el elemento creado para que la VISTA lo pueda mostrar
+  return e;
 }
 
-// FUNCION 3: CAMBIAR ESTADO DE UNA SUGERENCIA
+// FUNCION 3: CAMBIAR ESTADO DE UN ELEMENTO
 // --------------------------
-// CONTROLADOR que recibe una acción de cambiar el estado de la sugerencia
-export async function cambiarEstadoSugerencia(id, nuevoEstado, usuarioId) {
-  // LLAMADA AL MODELO: obtenemos la sugerencia antes de cambiarla
-  const antes = await prisma.sugerencia.findUnique({ where: { id } });
+// CONTROLADOR que recibe una acción de cambiar el estado de un elemento
+export async function cambiarEstadoElemento(id, nuevoEstado, usuarioId) {
+  // LLAMADA AL MODELO: obtenemos el elemento antes de cambiarlo
+  const antes = await prisma.elemento.findUnique({ where: { id } });
 
-  // LLAMADA AL MODELO: actualizamos el estado de la sugerencia
-  const updated = await prisma.sugerencia.update({
+  // LLAMADA AL MODELO: actualizamos el estado del elemento
+  const updated = await prisma.elemento.update({
     where: { id },
     data: { estado: nuevoEstado },
   });
 
   // LLAMADA AL MODELO: registramos el cambio de estado en el historial
   await crearHistorial({
-    entidad: "Sugerencia", // tipo de entidad que cambió
-    referenciaId: id, // id de la sugerencia
+    entidad: "Elemento", // tipo de entidad que cambió
+    referenciaId: id, // id del elemento
     estadoViejo: antes?.estado || null, // estado anterior
     estadoNuevo: nuevoEstado, // estado nuevo
     usuarioResponsable: usuarioId, // quién hizo el cambio
   });
 
-  // Si la sugerencia tiene un dueño, le enviamos notificación
+  // Si el elemento tiene un dueño, le enviamos notificación
   if (antes?.usuarioId)
     await crearNotificacion(
       antes.usuarioId,
-      `Sugerencia #${id} fue ${nuevoEstado}`
+      `Elemento #${id} fue ${nuevoEstado}`
     );
 
-  // DEVOLVEMOS la sugerencia actualizada para que la VISTA la pueda mostrar
+  // DEVOLVEMOS el elemento actualizado para que la VISTA lo pueda mostrar
   return updated;
 }
 
