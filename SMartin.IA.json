@@ -1,0 +1,801 @@
+{
+	"info": {
+		"_postman_id": "6befc6f3-003f-4931-b0e6-7ca20ec28974",
+		"name": "SMARTIN API Completa",
+		"description": "Colección REST para SMARTIN con todos los endpoints y ejemplos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29722352",
+		"_collection_link": "https://universal-water-392479.postman.co/workspace/New-Team-Workspace~e962ca1b-4e60-4baf-93ae-c1f1e7e4874a/collection/29722352-6befc6f3-003f-4931-b0e6-7ca20ec28974?action=share&source=collection_link&creator=29722352"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@dominio.com\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Todos los roles pueden loguearse"
+					},
+					"response": []
+				},
+				{
+					"name": "Registro",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"nuevo@dominio.com\",\n  \"username\": \"nuevo_usuario\",\n  \"password\": \"123456\",\n  \"nombre\": \"Nombre\",\n  \"apellido\": \"Apellido\",\n  \"rol\": \"alumno\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Todos los roles pueden registrarse"
+					},
+					"response": []
+				},
+				{
+					"name": "Recuperar contraseña",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@dominio.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/recover",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"recover"
+							]
+						},
+						"description": "Enviar correo para recuperar contraseña"
+					},
+					"response": []
+				},
+				{
+					"name": "LogOut",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Listar usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/usuarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Admin: Listar todos los usuarios"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"nuevo@dominio.com\",\n  \"username\": \"nuevo_usuario\",\n  \"password\": \"123456\",\n  \"nombre\": \"Nombre\",\n  \"apellido\": \"Apellido\",\n  \"rol\": \"profesor\",\n  \"cursoId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/usuarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						},
+						"description": "Admin: Dar de alta un usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar usuario",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"NuevoNombre\",\n  \"apellido\": \"NuevoApellido\",\n  \"rol\": \"profesor\",\n  \"cursoId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/usuarios/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Modificar datos de usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Blanquear contraseña",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"nuevoPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/usuarios/:id/password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios",
+								":id",
+								"password"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Blanquear contraseña"
+					},
+					"response": []
+				},
+				{
+					"name": "Dar de baja usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/usuarios/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Dar de baja usuario"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reservas",
+			"item": [
+				{
+					"name": "Listar reservas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservas"
+							]
+						},
+						"description": "Todos: Listar reservas propias o filtrar"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear reserva",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipo\": \"inmediata\",\n  \"usuarioId\": 1,\n  \"equipoId\": 2,\n  \"aulaId\": 1,\n  \"scheduledAt\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/reservas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservas"
+							]
+						},
+						"description": "Alumno: PC inmediata, Profesor/Preceptor/Especial/Admin: inmediata o programada"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar reserva",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reservas/:id/cancelar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reservas",
+								":id",
+								"cancelar"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Profesor/Preceptor/Especial/Admin: Cancelar reserva"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sugerencias",
+			"item": [
+				{
+					"name": "Listar sugerencias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/sugerencias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sugerencias"
+							]
+						},
+						"description": "Todos: Listar sugerencias propias o filtrar"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear sugerencia",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Idea de mejora\",\n  \"descripcion\": \"Descripcion de la sugerencia\",\n  \"usuarioId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sugerencias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sugerencias"
+							]
+						},
+						"description": "Todos: Crear sugerencia"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar estado sugerencia",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"aceptado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sugerencias/:id/estado",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sugerencias",
+								":id",
+								"estado"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Cambiar estado de sugerencia"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "Listar tickets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets"
+							]
+						},
+						"description": "Todos: Listar tickets propios o filtrar"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear ticket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descripcion\": \"PC no enciende\",\n  \"imagen\": \"url_imagen\",\n  \"usuarioId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets"
+							]
+						},
+						"description": "Todos: Crear ticket"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar estado ticket",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"aceptado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tickets/:id/estado",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets",
+								":id",
+								"estado"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Cambiar estado del ticket"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Instalaciones",
+			"item": [
+				{
+					"name": "Listar instalaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/instalaciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"instalaciones"
+							]
+						},
+						"description": "Profesor, Especial, Admin: Listar solicitudes"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear instalación",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"aplicacion\": \"Zoom\",\n  \"descripcion\": \"Instalar Zoom en laboratorio\",\n  \"usuarioId\": 1,\n  \"equipoId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/instalaciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"instalaciones"
+							]
+						},
+						"description": "Profesor, Especial, Admin: Crear solicitud"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar estado instalación",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"completada\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/instalaciones/:id/estado",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"instalaciones",
+								":id",
+								"estado"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Cambiar estado de instalación"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cursos",
+			"item": [
+				{
+					"name": "Listar cursos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cursos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cursos"
+							]
+						},
+						"description": "Admin: Listar todos los cursos"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear curso",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Curso de Matemáticas\",\n  \"descripcion\": \"Curso nivel secundario\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cursos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cursos"
+							]
+						},
+						"description": "Admin: Crear un curso"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar curso",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Curso de Física\",\n  \"descripcion\": \"Curso actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cursos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cursos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Actualizar curso"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar curso",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cursos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"cursos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Eliminar curso"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Equipos",
+			"item": [
+				{
+					"name": "Listar equipos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"equipos"
+							]
+						},
+						"description": "Admin: Listar todos los equipos"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear equipo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"PC Laboratorio 1\",\n  \"imagen\": \"url_imagen\",\n  \"estado\": \"disponible\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"equipos"
+							]
+						},
+						"description": "Admin: Crear equipo"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar equipo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"PC Laboratorio 1\",\n  \"estado\": \"mantenimiento\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/equipos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"equipos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Actualizar equipo"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar equipo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/equipos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"equipos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						},
+						"description": "Admin: Eliminar equipo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estadisticas",
+			"item": [
+				{
+					"name": "Obtener estadísticas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/estadisticas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"estadisticas"
+							]
+						},
+						"description": "Especial, Admin: Obtener métricas y gráficos según filtros"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ver como",
+			"item": [
+				{
+					"name": "Listar roles para ver como",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/usuarios/roles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios",
+								"roles"
+							]
+						},
+						"description": "Profesor, Especial, Admin: Listar roles disponibles para impersonar"
+					},
+					"response": []
+				},
+				{
+					"name": "Impersonar rol",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rol\": \"alumno\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/usuarios/impersonate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"usuarios",
+								"impersonate"
+							]
+						},
+						"description": "Profesor, Especial, Admin: Ver el sistema como otro rol"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
