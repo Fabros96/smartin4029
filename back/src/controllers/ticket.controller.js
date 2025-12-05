@@ -1,4 +1,4 @@
-import * as service from "../services/ticket.services.js";
+import * as service from "../services/ticket.service.js";
 
 export async function crearTicket(req, res) {
   try {

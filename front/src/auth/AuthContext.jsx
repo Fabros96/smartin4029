@@ -8,27 +8,29 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   
   // Verifica sesión activa al montar la app
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get("/auth/me");
-        // Guardamos el usuario real
-        setUsuario(res.data.usuario);
-      } catch (err) {
-        setUsuario(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const checkSession = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/auth/me");
+      console.log("Usuario autenticado:", res.data);
+      setUsuario(res.data.user || res.data.usuario);
+    } catch (err) {
+      setUsuario(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    checkSession();
-  }, []);
+  checkSession();
+}, []);
+
 
   // Login
   const login = async (identifier, password) => {
     const res = await api.post("/auth/login", { identifier, password });
-    setUsuario(res.data.user); // ajustado al backend
+    setUsuario(res.data.user || res.data.usuario);
+
   };
 
   // Logout

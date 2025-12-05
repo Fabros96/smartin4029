@@ -1,13 +1,7 @@
-// src/components/ProtectedRoute.jsx
 import React from "react";
 import { useAuth } from "../auth/AuthContext";
 import { Navigate } from "react-router-dom";
 
-/*
-  Protege rutas por:
-  ✅ Usuario logueado
-  ✅ Rol autorizado
-*/
 export default function ProtectedRoute({ children, rolesPermitidos }) {
   const { usuario, loading } = useAuth();
 
@@ -18,16 +12,19 @@ export default function ProtectedRoute({ children, rolesPermitidos }) {
     return <Navigate to="/login" replace />;
   }
 
-  // ✅ Si NO se especifican roles → entra cualquier usuario logueado
-  if (!rolesPermitidos) {
+  // ✅ Permitir a todos los usuarios logueados
+  if (!rolesPermitidos || rolesPermitidos === "Todos") {
     return children;
   }
-  
-  // ❌ Está logueado pero no tiene permiso
-  if (rolesPermitidos && !rolesPermitidos.includes(usuario.rol)) {
+
+  // ✅ Control por lista de roles
+  if (
+    Array.isArray(rolesPermitidos) &&
+    !rolesPermitidos.includes(usuario.rol)
+  ) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // ✅ Usuario autorizado
+  // ✅ Autorizado
   return children;
 }

@@ -1,4 +1,4 @@
-import * as service from "../services/auth.services.js";
+import * as service from "../services/auth.service.js";
 // view-as: guarda original token y emite token temporal con nuevo rol
 import jwt from "jsonwebtoken";
 
@@ -35,6 +35,13 @@ export function logout(req, res) {
   res.json({ ok: true, msg: "Sesión cerrada" });
 }
 
+export async function register(req, res) {
+  try {
+    await service.register(req, res);
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+}
 
 export async function viewAs(req, res) {
   try {
@@ -121,6 +128,8 @@ export async function me(req, res) {
       email: usuario.email,
       telefono: usuario.telefono,
       estado: usuario.estado,
+      rol: usuario.rol,
+      fechaBaja: usuario.fechaBaja,
       createdAt: usuario.createdAt,
       updatedAt: usuario.updatedAt,
     };

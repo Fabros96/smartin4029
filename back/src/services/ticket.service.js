@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { crearHistorial } from "./historial.services.js";
-import { crearNotificacion } from "./notificacion.services.js";
+import { crearHistorial } from "./historial.service.js";
+import { crearNotificacion } from "./notificacion.service.js";
 const prisma = new PrismaClient();
 
 export async function crearTicket({ descripcion, imagen = null, usuarioId }) {
-  const numero = `T-${Date.now()}`; 
+  const numero = `T-${Date.now()}`;
 
   const nuevo = await prisma.ticket.create({
     data: {
@@ -36,11 +36,10 @@ export async function cambiarEstadoTicket(id, nuevoEstado, usuarioId) {
     data: { estado: nuevoEstado },
   });
   await crearHistorial({
-    
     estadoViejo: antes?.estado || null,
     estadoNuevo: nuevoEstado,
     usuarioResponsable: usuarioId,
-    ticket: {connect: { id: nuevo.id }, },
+    ticket: { connect: { id: nuevo.id } },
   });
   // notificar usuario creador
   if (antes?.usuarioId)

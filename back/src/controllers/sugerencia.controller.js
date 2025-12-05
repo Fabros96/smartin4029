@@ -1,4 +1,4 @@
-import * as service from "../services/sugerencia.services.js";
+import * as service from "../services/sugerencia.service.js";
 
 export async function listarSugerencias(req, res) {
   try {

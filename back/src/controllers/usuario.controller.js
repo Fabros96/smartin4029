@@ -1,5 +1,5 @@
 // src/controllers/usuarios.controller.js
-import { UsuariosService } from "../services/usuario.services.js";
+import { UsuariosService } from "../services/usuario.service.js";
 
 /*
   Controller de Usuarios

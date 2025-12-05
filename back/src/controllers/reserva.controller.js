@@ -1,4 +1,4 @@
-import * as service from "../services/reserva.services.js";
+import * as service from "../services/reserva.service.js";
 
 export async function crearReserva(req, res) {
   try {

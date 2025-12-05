@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { crearHistorial } from "./historial.services.js";
-import { crearNotificacion } from "./notificacion.services.js";
+import { crearHistorial } from "./historial.service.js";
+import { crearNotificacion } from "./notificacion.service.js";
 const prisma = new PrismaClient();
 
 /**

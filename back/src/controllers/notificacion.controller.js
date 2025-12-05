@@ -1,4 +1,4 @@
-import * as service from "../services/notificacion.services.js";
+import * as service from "../services/notificacion.service.js";
 
 export async function listarNotificaciones(req, res) {
   const usuarioId = req.user.id;

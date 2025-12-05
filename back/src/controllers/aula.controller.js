@@ -1,4 +1,4 @@
-import * as service from "../services/aula.services.js";
+import * as service from "../services/aula.service.js";
 
 export async function crearAula(req, res) {
   try {

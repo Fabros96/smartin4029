@@ -45,6 +45,9 @@ export default function Navbar() {
           <Link to="/sugerencias" style={{ marginRight: "10px" }}>
             Sugerencias
           </Link>
+          <Link to="/misDatos" style={{ marginRight: "10px" }}>
+            Mis Datos
+          </Link>
         </>
       )}
 

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { crearHistorial } from "./historial.services.js";
-import { crearNotificacion } from "./notificacion.services.js";
+import { crearHistorial } from "./historial.service.js";
+import { crearNotificacion } from "./notificacion.service.js";
 const prisma = new PrismaClient();
 
 export async function crearInstalacion({
@@ -24,6 +24,10 @@ export async function crearInstalacion({
   if (usuarioId)
     await crearNotificacion(usuarioId, `Instalación ${aplicacion} creada`);
   return i;
+}
+
+export async function listarInstalaciones() {
+  return prisma.instalacion.findMany({ orderBy: { createdAt: "asc" } });
 }
 
 export async function cambiarEstadoInstalacion(id, nuevoEstado, usuarioId) {

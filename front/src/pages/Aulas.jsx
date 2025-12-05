@@ -17,8 +17,8 @@ export default function Aulas() {
   const fetchAulas = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/aulas"); // backend Smartin usa "aulas"
-      setAulas(res.data);
+      const res = await api.get("/aulas");
+      setAulas(res.data.rows);
     } catch (err) {
       console.log(err);
       alert("Error al cargar aulas");
@@ -54,21 +54,24 @@ export default function Aulas() {
             </tr>
           </thead>
           <tbody>
-            {aulas.map((aula) => (
-              <tr key={aula.id}>
-                <td>{aula.id}</td>
-                <td>{aula.nombre}</td>
-                <td>{aula.estado}</td>
-                <td>
-                  <button onClick={() => cambiarEstado(aula.id, "disponible")}>
-                    Disponible
-                  </button>
-                  <button onClick={() => cambiarEstado(aula.id, "ocupado")}>
-                    Ocupado
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {Array.isArray(aulas) &&
+              aulas.map((aula) => (
+                <tr key={aula.id}>
+                  <td>{aula.id}</td>
+                  <td>{aula.nombre}</td>
+                  <td>{aula.estado}</td>
+                  <td>
+                    <button
+                      onClick={() => cambiarEstado(aula.id, "disponible")}
+                    >
+                      Disponible
+                    </button>
+                    <button onClick={() => cambiarEstado(aula.id, "ocupado")}>
+                      Ocupado
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

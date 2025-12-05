@@ -21,7 +21,7 @@ export default function Instalaciones() {
     try {
       setLoading(true);
       const res = await api.get("/instalaciones");
-      setInstalaciones(res.data);
+      setInstalaciones(res.data.rows || res.data.instalaciones);
     } catch (err) {
       console.log(err);
       setError("Error al cargar las instalaciones");
@@ -61,26 +61,27 @@ export default function Instalaciones() {
             </tr>
           </thead>
           <tbody>
-            {instalaciones.map((inst) => (
-              <tr key={inst.id}>
-                <td>{inst.id}</td>
-                <td>{inst.aplicacion}</td>
-                <td>{inst.estado}</td>
-                <td>{inst.equipoId || "-"}</td>
-                <td>{inst.salaId || "-"}</td>
-                <td>
-                  <button onClick={() => cambiarEstado(inst.id, "pendiente")}>
-                    Pendiente
-                  </button>
-                  <button onClick={() => cambiarEstado(inst.id, "aprobada")}>
-                    Aprobada
-                  </button>
-                  <button onClick={() => cambiarEstado(inst.id, "rechazada")}>
-                    Rechazada
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {Array.isArray(instalaciones) &&
+              instalaciones.map((inst) => (
+                <tr key={inst.id}>
+                  <td>{inst.id}</td>
+                  <td>{inst.aplicacion}</td>
+                  <td>{inst.estado}</td>
+                  <td>{inst.equipoId || "-"}</td>
+                  <td>{inst.salaId || "-"}</td>
+                  <td>
+                    <button onClick={() => cambiarEstado(inst.id, "pendiente")}>
+                      Pendiente
+                    </button>
+                    <button onClick={() => cambiarEstado(inst.id, "aprobada")}>
+                      Aprobada
+                    </button>
+                    <button onClick={() => cambiarEstado(inst.id, "rechazada")}>
+                      Rechazada
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

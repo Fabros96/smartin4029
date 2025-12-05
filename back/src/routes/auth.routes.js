@@ -5,6 +5,7 @@ import { auth } from "../middleware/auth.middleware.js";
 const router = express.Router();
 
 // login con identifier (email o username) y password
+router.post("/register", controller.register);
 router.post("/login", controller.login);
 router.post("/logout", auth, controller.logout);
 

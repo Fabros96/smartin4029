@@ -10,6 +10,8 @@ import Instalaciones from "./pages/Instalaciones";
 import Aulas from "./pages/Aulas";
 import ViewAs from "./pages/ViewAs.jsx";
 import Sugerencias from "./pages/Sugerencias";
+import MisDatos from "./pages/MisDatos.jsx";
+import Register from "./pages/Register";
 
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -28,20 +30,28 @@ export default function App() {
             </PublicRoute>
           }
         />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
         {/* Dashboard: privado, requiere sesión */}
         <Route
           path="/dashboard"
           element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
+            <ProtectedRoute rolesPermitidos={"Todos"}>
+              <Equipos />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/equipos"
           element={
-            <ProtectedRoute rolesPermitidos={["admin"]}>
+            <ProtectedRoute rolesPermitidos={"Todos"}>
               <Equipos />
             </ProtectedRoute>
           }
@@ -54,6 +64,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+            path="/misDatos"
+            element={
+              <ProtectedRoute rolesPermitidos={"Todos"}>
+                <MisDatos />
+              </ProtectedRoute>
+            }
+          />
         <Route
           path="/usuarios"
           element={

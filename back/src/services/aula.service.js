@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { crearHistorial } from "./historial.services.js";
+import { crearHistorial } from "./historial.service.js";
 const prisma = new PrismaClient();
 
 export async function crearAula(data) {

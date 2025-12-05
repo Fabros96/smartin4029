@@ -13,6 +13,7 @@ import instalacionRoutes from "./routes/instalacion.routes.js";
 import notificacionRoutes from "./routes/notificacion.routes.js";
 import historialRoutes from "./routes/historial.routes.js";
 import usuarioRoutes from "./routes/usuario.routes.js";
+import misDatosRoutes  from "./routes/misDatos.routes.js";
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use("/api", instalacionRoutes);
 app.use("/api", notificacionRoutes);
 app.use("/api", historialRoutes);
 app.use("/api", usuarioRoutes);
+app.use("/api", misDatosRoutes);
 
 // root
 app.get("/", (req, res) =>

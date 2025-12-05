@@ -10,12 +10,13 @@ datasource db {
 model Usuario {
   id        Int       @id @default(autoincrement())
   email     String    @unique
+  imagen    String?
   username  String    @unique
   password  String
   nombre    String
   apellido  String
-  rol       Rol
-  fechaBaja DateTime?
+  rol       Rol       @default(alumno)
+  fechaBaja DateTime? @default(now())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   preferenciaNotif Int @default(0)
@@ -26,7 +27,26 @@ model Usuario {
   instalaciones  Instalacion[]
   notificaciones Notificacion[]
   historiales    Historial[]
+
+  // Relaciones con cursos
+  cursoId   Int?     // Para Alumno: un solo curso
+  curso     Curso?   @relation(fields: [cursoId], references: [id])
+
+  cursosProfesor Curso[] @relation("ProfesorCursos") // Para Profesor: varios cursos
 }
+
+model Curso {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  descripcion String?
+
+  alumnos   Usuario[] @relation(fields: [], references: []) // Alumno ↔ Curso (uno a muchos)
+  profesores Usuario[] @relation("ProfesorCursos")         // Profesor ↔ Curso (uno a muchos)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model Equipo {
   id        Int           @id @default(autoincrement())

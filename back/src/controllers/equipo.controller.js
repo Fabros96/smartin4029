@@ -1,4 +1,4 @@
-import * as service from "../services/equipo.services.js";
+import * as service from "../services/equipo.service.js";
 
 export async function crearEquipo(req, res) {
   try {

@@ -1,4 +1,4 @@
-import { obtenerHistorial } from "../services/historial.services.js";
+import { obtenerHistorial } from "../services/historial.service.js";
 
 export async function getHistorial(req, res) {
   try {

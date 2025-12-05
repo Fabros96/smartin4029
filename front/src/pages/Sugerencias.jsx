@@ -19,7 +19,6 @@ export default function Sugerencias() {
     try {
       setLoading(true);
       const res = await api.get("/sugerencias");
-      console.log(res.data);
       setSugerencias(res.data.sugerencias);
     } catch (err) {
       console.log(err);

@@ -9,13 +9,7 @@ import Navbar from "../components/Navbar";
   
   Esta es una plantilla de ejemplo. Para crear tu propio CRUD:
   
-  1. Copiá este archivo y renombralo (ej: TicketsCrud.jsx)
-  
-  2. Reemplazá "recurso" por tu endpoint:
-     - Línea 28: api.get("/recurso") → api.get("/tickets")
-     - Línea 43: api.patch("/recurso/...") → api.patch("/tickets/...")
-     - Línea 46: api.post("/recurso") → api.post("/tickets")
-     - Línea 68: api.delete("/recurso/...") → api.delete("/tickets/...")
+  1. Copiá este archivo y renombralo (ej: NombreCrud.jsx)
   
   3. Modificá los campos del formulario (líneas 82-92)
      Ejemplo para tickets:

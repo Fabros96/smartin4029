@@ -33,3 +33,23 @@ export async function actualizarMisDatos(id, data) {
     data,
   });
 }
+
+export async function register(req, res) {
+  try {
+    const { nombre, apellido, email, username, password, telefono } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.usuario.create({
+      data: {
+        nombre,
+        apellido,
+        email,
+        username,
+        password: hashedPassword,
+        telefono,
+      },
+    });
+    res.status(201).json({ ok: true, user: newUser });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+}
